@@ -1,40 +1,32 @@
 import * as vscode from 'vscode';
 
+export const activeEditor = () => vscode.window.activeTextEditor!;
+
 export function activate(context: vscode.ExtensionContext) {
-
-	console.log('Start!');
-
 	let disposable = vscode.commands.registerCommand('refactoringextension.helloWorld', () => {
-		var currentEditor = vscode.window.activeTextEditor!;
+		const report = getSourceMetrics();
 	
-		const report = getSourceMetrics(currentEditor.document.getText());
-	
-		showDiagnostics(currentEditor, report);
+		showDiagnostics(report);
 
-		vscode.window.showInformationMessage('Rodou a extensão!');	
+		vscode.window.showInformationMessage('Sucesso!');	
 	});
 
 	context.subscriptions.push(disposable);
 }
 
-export function getSourceMetrics(sourceCode: string): any {
+export function getSourceMetrics(): any {
 	var escomplex = require('typhonjs-escomplex');
 
-	return escomplex.analyzeModule(sourceCode);
+	console.log(activeEditor().document.getText());
+
+	return escomplex.analyzeModule(activeEditor().document.getText());
 }
 
-export function showDiagnostics(editor: any, report: any) {
+export function showDiagnostics(report: any) {
 	console.log("report", report);
 
 	let diagnosticCollection = vscode.languages.createDiagnosticCollection("stuff");
 	let diagnostics : vscode.Diagnostic[] = [];
-
-	/*let positionStart = new vscode.Position(0, 0);
-	let positionEnd = new vscode.Position(0, 0);
-
-	let range = new vscode.Range(positionStart, positionEnd);
-
-	diagnostics.push(new vscode.Diagnostic(range, "teste", vscode.DiagnosticSeverity.Warning));*/
 
 	report.classes.forEach((classe: any) => {
 		getClassDiagnostic(classe, diagnostics);
@@ -44,7 +36,7 @@ export function showDiagnostics(editor: any, report: any) {
 		getMethodDiagnostic(method, diagnostics);
 	});
 
-	diagnosticCollection.set(editor.document.uri, diagnostics);
+	diagnosticCollection.set(activeEditor().document.uri, diagnostics);
 }
 
 export function getClassDiagnostic(classReport: any, diagnostics: any) {

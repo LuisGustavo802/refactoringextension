@@ -1,12 +1,19 @@
 import * as vscode from 'vscode';
+import * as ternary from "./refactorings/convert-if-else-to-ternary/convert-if-else-to-ternary";
+import * as t from "./ast";
 
 export const activeEditor = () => vscode.window.activeTextEditor!;
 
 export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('refactoringextension.helloWorld', () => {
 		const report = getSourceMetrics();
-	
 		showDiagnostics(report);
+		const teste = t.parse(activeEditor().document.getText());
+
+		console.log("teste", vscode.window);
+		console.log("editor", vscode.window.activeTextEditor);
+
+		ternary.convertIfElseToTernarsy(activeEditor().document.getText(), vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
 
 		vscode.window.showInformationMessage('Sucesso!');	
 	});

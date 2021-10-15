@@ -2,6 +2,9 @@ import * as vscode from 'vscode';
 import * as ternary from "./refactorings/convert-if-else-to-ternary/convert-if-else-to-ternary";
 import * as t from "./ast";
 
+//extract method
+//move method
+
 export const activeEditor = () => vscode.window.activeTextEditor!;
 
 export function activate(context: vscode.ExtensionContext) {

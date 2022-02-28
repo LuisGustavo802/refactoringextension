@@ -2,41 +2,24 @@ import { Editor, ErrorReason } from "../../editor/editor";
 import { Selection } from "../../editor/selection";
 import * as t from "../../ast";
 
-export { convertIfElseToTernary, convertIfElseToTernarsy, createVisitor as hasIfElseToConvert };
+export { convertIfElseToTernary, createVisitor as hasIfElseToConvert };
 
-async function convertIfElseToTernary(editor: Editor) {
-  const { code, selection } = editor;
-  const updatedCode = updateCode(t.parse(code), selection);
+async function convertIfElseToTernary(code: any, selection: any, file: any) {
 
-  if (!updatedCode.hasCodeChanged) {
-    editor.showError(ErrorReason.DidNotFindIfElseToConvert);
-    return;
-  }
-
-  await editor.write(updatedCode.code);
-}
-
-async function convertIfElseToTernarsy(code: any, selection: any, file: any) {
   const updatedCode = updateCode(t.parse(code), selection);
 
   console.log("updatedCode", updatedCode);
 
   if (!updatedCode.hasCodeChanged) {
-    //editor.showError(ErrorReason.DidNotFindIfElseToConvert);
+    console.log("error convertIfElseToTernary");
     return;
   }
-
-  var saved = false;
 
   var fs = require('fs');
 
   if (fs.existsSync( file )) {
-    saved = fs.writeFileSync(file, updatedCode.code, 'utf8');
+    fs.writeFileSync(file, updatedCode.code, 'utf8');
   }
-
-  console.log("saved", saved);
-
-  //await editor.write(updatedCode.code);
 }
 
 function updateCode(ast: t.AST, selection: Selection): t.Transformed {

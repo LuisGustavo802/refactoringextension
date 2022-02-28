@@ -10,20 +10,24 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:refactoringextension.helloWorld",
-		"onCommand:abracadabra.convertIfElseToTernary"
+		"onCommand:refactoringextension.convertIfElseToTernary",
+		"onCommand:refactoringextension.removeDeadCode",
+		"onCommand:refactoringextension.extractType"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "refactoringextension.helloWorld",
-				"title": "Refatorar"
+				"command": "refactoringextension.convertIfElseToTernary",
+				"title": "Convert to ternary"
 			},
 			{
-				"command": "abracadabra.convertIfElseToTernary",
-				"title": "Convert If/Else to Ternary",
-				"category": "Abracadabra"
+				"command": "refactoringextension.removeDeadCode",
+				"title": "Remove dead code"
+			},
+			{
+				"command": "refactoringextension.extractType",
+				"title": "Extract Type"
 			}
 		]
 	},

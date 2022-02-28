@@ -1,27 +1,83 @@
 import * as vscode from 'vscode';
 import * as ternary from "./refactorings/convert-if-else-to-ternary/convert-if-else-to-ternary";
+import * as deadCode from "./refactorings/remove-dead-code/remove-dead-code";
+import * as extractType from "./refactorings/extract-type/extract-type";
 import * as t from "./ast";
 
-//extract method
-//move method
+//tecnicas de refatoracao
+	//extract method
+	//move method
+
+//code smells
+   // dead
+   // convert to ternary
+   //
 
 export const activeEditor = () => vscode.window.activeTextEditor!;
 
 export function activate(context: vscode.ExtensionContext) {
-	let disposable = vscode.commands.registerCommand('refactoringextension.helloWorld', () => {
-		const report = getSourceMetrics();
-		showDiagnostics(report);
-		const teste = t.parse(activeEditor().document.getText());
-
-		console.log("teste", vscode.window);
-		console.log("editor", vscode.window.activeTextEditor);
-
-		ternary.convertIfElseToTernarsy(activeEditor().document.getText(), vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
-
-		vscode.window.showInformationMessage('Sucesso!');	
+	let convertIfElseToTernary = vscode.commands.registerCommand('refactoringextension.convertIfElseToTernary', () => {
+		executeConvertIfElseToTernary();
 	});
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(convertIfElseToTernary);
+
+	let removeDeadCode = vscode.commands.registerCommand('refactoringextension.removeDeadCode', () => {
+		executeRemoveDeadCode();
+	});
+
+	context.subscriptions.push(removeDeadCode);
+
+	let extractType = vscode.commands.registerCommand('refactoringextension.extractType', () => {
+		executeExtractType();
+	});
+
+	context.subscriptions.push(extractType);
+}
+
+export function executeConvertIfElseToTernary() {
+	const report = getSourceMetrics();
+	showDiagnostics(report);
+	const teste = t.parse(activeEditor().document.getText());
+
+	console.log("var teste", teste);
+	console.log("teste", vscode.window);
+	console.log("editor", vscode.window.activeTextEditor);
+
+	ternary.convertIfElseToTernary(activeEditor().document.getText(), 
+		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+
+	vscode.window.showInformationMessage('Sucesso ternary!');	
+}
+
+export function executeRemoveDeadCode() {
+	const report = getSourceMetrics();
+	showDiagnostics(report);
+	const teste = t.parse(activeEditor().document.getText());
+
+	console.log("var teste", teste);
+	console.log("teste", vscode.window);
+	console.log("editor", vscode.window.activeTextEditor);
+
+	deadCode.removeDeadCode(activeEditor().document.getText(), 
+		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+
+	vscode.window.showInformationMessage('Sucesso dead code!');	
+}
+
+export function executeExtractType() {
+	const report = getSourceMetrics();
+	showDiagnostics(report);
+	const teste = t.parse(activeEditor().document.getText());
+
+	console.log("var teste", teste);
+	console.log("teste", vscode.window);
+	console.log("editor", vscode.window.activeTextEditor);
+
+	extractType.extractType(activeEditor().document.getText(), 
+		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+
+	vscode.window.showInformationMessage('Sucesso dead code!');	
 }
 
 export function getSourceMetrics(): any {

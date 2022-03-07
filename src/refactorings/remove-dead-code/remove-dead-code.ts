@@ -2,6 +2,19 @@ import { Editor, ErrorReason } from "../../editor/editor";
 import { Selection } from "../../editor/selection";
 import * as t from "../../ast";
 
+export function hasCodeChanged(code: any, selection: any, file: any) {
+
+  const updatedCode = updateCode(t.parse(code), selection);
+
+  console.log("updatedCode", updatedCode);
+
+  if (updatedCode.hasCodeChanged) {
+    return "Remove dead code";
+  }
+
+  return;
+}
+
 export async function removeDeadCode(code: any, selection: any, file: any) {
   const updatedCode = updateCode(t.parse(code), selection);
 

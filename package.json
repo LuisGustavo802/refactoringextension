@@ -12,7 +12,10 @@
 	"activationEvents": [
 		"onCommand:refactoringextension.convertIfElseToTernary",
 		"onCommand:refactoringextension.removeDeadCode",
-		"onCommand:refactoringextension.extractType"
+		"onCommand:refactoringextension.extractType",
+		"onCommand:refactoringextension.extractInterface",
+		"onCommand:refactoringextension.inlineFunction",
+		"onCommand:refactoringextension.identifyOportunity"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -28,6 +31,18 @@
 			{
 				"command": "refactoringextension.extractType",
 				"title": "Extract Type"
+			},
+			{
+				"command": "refactoringextension.extractInterface",
+				"title": "Extract Interface"
+			},
+			{
+				"command": "refactoringextension.inlineFunction",
+				"title": "Inline function"
+			},
+			{
+				"command": "refactoringextension.identifyOportunity",
+				"title": "Identificar oportunidades de refagotação"
 			}
 		]
 	},

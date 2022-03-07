@@ -3,6 +3,18 @@ import { Selection } from "../../editor/selection";
 import { Position } from "../../editor/position";
 import * as t from "../../ast";
 
+export function hasCodeChanged(code: any, selection: any, file: any) {
+
+  const updatedCode = updateCode(t.parse(code), selection);
+
+  console.log("updatedCode", updatedCode);
+
+  if (updatedCode.hasCodeChanged) {
+    return "Extract type";
+  }
+
+  return;
+}
 
 export async function extractType(code: any, selection: any, file: any) {
   const updatedCode = updateCode(t.parse(code), selection);

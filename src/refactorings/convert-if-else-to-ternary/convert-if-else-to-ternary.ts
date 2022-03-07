@@ -2,7 +2,20 @@ import { Editor, ErrorReason } from "../../editor/editor";
 import { Selection } from "../../editor/selection";
 import * as t from "../../ast";
 
-export { convertIfElseToTernary, createVisitor as hasIfElseToConvert };
+export { convertIfElseToTernary, hasCodeChanged, createVisitor as hasIfElseToConvert };
+
+function hasCodeChanged(code: any, selection: any, file: any) {
+
+  const updatedCode = updateCode(t.parse(code), selection);
+
+  console.log("updatedCode", updatedCode);
+
+  if (updatedCode.hasCodeChanged) {
+    return "Converter if else to ternary";
+  }
+
+  return;
+}
 
 async function convertIfElseToTernary(code: any, selection: any, file: any) {
 

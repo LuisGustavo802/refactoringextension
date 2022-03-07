@@ -1,9 +1,28 @@
 import * as vscode from 'vscode';
 
-type Extracted = number;
-type Extracted1 = string;
 
-export const formatCdPedParcela = (nuSeqParcela: Extracted, nuAnoPedParcela: Extracted1): Extracted1 => {
+function sayHello() {
+  console.log("Hello!");
+}
+sayHello();
+class Position implements Extracted {
+
+  name: string = "";
+
+  constructor(name: string) {
+    this.name = name;
+  }
+  isEqualTo(position: Position): boolean {
+    return true;
+  }
+}
+
+interface Extracted {
+  name: string;
+  isEqualTo(position: Position): boolean;
+}
+
+export const formatCdPedParcela = (nuSeqParcela: number, nuAnoPedParcela: string): string => {
   return `${String("0000" + nuSeqParcela).slice(-4)}/${nuAnoPedParcela}`;
 };
 

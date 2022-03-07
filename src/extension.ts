@@ -2,16 +2,18 @@ import * as vscode from 'vscode';
 import * as ternary from "./refactorings/convert-if-else-to-ternary/convert-if-else-to-ternary";
 import * as deadCode from "./refactorings/remove-dead-code/remove-dead-code";
 import * as extractType from "./refactorings/extract-type/extract-type";
+import * as extractInterface from "./refactorings/extract-interface/extract-interface";
+import * as inlineFunction from "./refactorings/inline-function/inline-function";
 import * as t from "./ast";
 
 //tecnicas de refatoracao
 	//extract method
-	//move method
+	//inline method
 
 //code smells
    // dead
    // convert to ternary
-   //
+   // 
 
 export const activeEditor = () => vscode.window.activeTextEditor!;
 
@@ -33,6 +35,64 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(extractType);
+
+	let extractInterface = vscode.commands.registerCommand('refactoringextension.extractInterface', () => {
+		executeExtractInterface();
+	});
+
+	context.subscriptions.push(extractInterface);
+
+	let inlineFunction = vscode.commands.registerCommand('refactoringextension.inlineFunction', () => {
+		executeInlineFunction();
+	});
+
+	context.subscriptions.push(inlineFunction);
+
+	let identifyOportunity = vscode.commands.registerCommand('refactoringextension.identifyOportunity', () => {
+		executeIdentifyOportunity();
+	});
+
+	context.subscriptions.push(identifyOportunity);
+}
+
+export function executeIdentifyOportunity() {
+
+	let refatoracoes: any = [];
+
+	refatoracoes.push(ternary.hasCodeChanged(activeEditor().document.getText(), 
+	vscode.window.activeTextEditor?.selection, activeEditor().document.fileName));
+
+	refatoracoes.push(deadCode.hasCodeChanged(activeEditor().document.getText(), 
+			vscode.window.activeTextEditor?.selection, activeEditor().document.fileName));
+
+	refatoracoes.push(extractType.hasCodeChanged(activeEditor().document.getText(), 
+			vscode.window.activeTextEditor?.selection, activeEditor().document.fileName));
+
+	refatoracoes.push(extractInterface.hasCodeChanged(activeEditor().document.getText(), 
+			vscode.window.activeTextEditor?.selection, activeEditor().document.fileName));
+
+	refatoracoes.push(inlineFunction.hasCodeChanged(activeEditor().document.getText(), 
+			vscode.window.activeTextEditor?.selection, activeEditor().document.fileName));
+
+	if (refatoracoes.length > 0) {
+		let formatedRefactors = ""; 	
+
+		refatoracoes.forEach((item: string) => {
+			formatedRefactors += item !== undefined ? item === refatoracoes[refatoracoes.length -1] ? item : item + ", " : "";
+		});
+
+		vscode.window
+		.showInformationMessage("Foram identificadas as seguintes oportunidades de refatoração: " + formatedRefactors + ". Deseja aplica-las?", "Sim", "Não")
+		.then(answer => {
+			if (answer === "Sim") {
+				//executeConvertIfElseToTernary();
+				//executeRemoveDeadCode();
+				//executeExtractType();
+				//executeExtractInterface();
+				//executeInlineFunction();
+			}
+		});
+	}
 }
 
 export function executeConvertIfElseToTernary() {
@@ -77,7 +137,37 @@ export function executeExtractType() {
 	extractType.extractType(activeEditor().document.getText(), 
 		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
 
-	vscode.window.showInformationMessage('Sucesso dead code!');	
+	vscode.window.showInformationMessage('Sucesso extract type!');	
+}
+
+export function executeExtractInterface() {
+	const report = getSourceMetrics();
+	showDiagnostics(report);
+	const teste = t.parse(activeEditor().document.getText());
+
+	console.log("var teste", teste);
+	console.log("teste", vscode.window);
+	console.log("editor", vscode.window.activeTextEditor);
+
+	extractInterface.extractInterface(activeEditor().document.getText(), 
+		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+
+	vscode.window.showInformationMessage('Sucesso extract interface!');	
+}
+
+export function executeInlineFunction() {
+	const report = getSourceMetrics();
+	showDiagnostics(report);
+	const teste = t.parse(activeEditor().document.getText());
+
+	console.log("var teste", teste);
+	console.log("teste", vscode.window);
+	console.log("editor", vscode.window.activeTextEditor);
+
+	inlineFunction.inlineFunction(activeEditor().document.getText(), 
+		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+
+	vscode.window.showInformationMessage('Sucesso inline function!');	
 }
 
 export function getSourceMetrics(): any {

@@ -1,6 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.formataCPFCPNPJ = exports.formatCdPedParcProcesso = exports.formatNuSeqPedParcel = exports.getNuProcessoFormatado = exports.formatCdPedParcela = void 0;
+function sayHello() {
+    console.log("Hello!");
+}
+sayHello();
+class Position {
+    constructor(name) {
+        this.name = "";
+        this.name = name;
+    }
+    isEqualTo(position) {
+        return true;
+    }
+}
 const formatCdPedParcela = (nuSeqParcela, nuAnoPedParcela) => {
     return `${String("0000" + nuSeqParcela).slice(-4)}/${nuAnoPedParcela}`;
 };

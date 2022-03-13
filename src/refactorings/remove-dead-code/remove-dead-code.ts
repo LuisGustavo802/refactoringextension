@@ -9,7 +9,7 @@ export function hasCodeChanged(code: any, selection: any, file: any) {
   console.log("updatedCode", updatedCode);
 
   if (updatedCode.hasCodeChanged) {
-    return "Remove dead code";
+    return "Remove dead code\n";
   }
 
   return;
@@ -74,8 +74,6 @@ export function createVisitor(
 ): t.Visitor {
   return {
     IfStatement(path) {
-      ////if (!selection.isInsidePath(path)) return;
-
       const { test } = path.node;
 
       if (t.isFalsy(test)) {

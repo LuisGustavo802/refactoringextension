@@ -10,7 +10,7 @@ export function hasCodeChanged(code: any, selection: any, file: any) {
   console.log("updatedCode", updatedCode);
 
   if (updatedCode.hasCodeChanged) {
-    return "Extract interface";
+    return "Extract interface\n";
   }
 
   return;
@@ -92,8 +92,6 @@ export function createVisitor(
       ) {
         path.node.loc = path.parent.loc;
       }
-
-      //if (!selection.isInsidePath(path)) return;
 
       const methods: t.ClassMethod[] = path.node.body.body.filter(
         (method: any): method is t.ClassMethod => t.isClassMethod(method)

@@ -4,16 +4,8 @@ import * as deadCode from "./refactorings/remove-dead-code/remove-dead-code";
 import * as extractType from "./refactorings/extract-type/extract-type";
 import * as extractInterface from "./refactorings/extract-interface/extract-interface";
 import * as inlineFunction from "./refactorings/inline-function/inline-function";
+import * as autoIdentifyOportunity from "./refactorings/auto-indentify-oportunity";
 import * as t from "./ast";
-
-//tecnicas de refatoracao
-	//extract method
-	//inline method
-
-//code smells
-   // dead
-   // convert to ternary
-   // 
 
 export const activeEditor = () => vscode.window.activeTextEditor!;
 
@@ -53,94 +45,40 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(identifyOportunity);
+
+	vscode.window.showInformationMessage('Operação executada com sucesso!');
 }
 
 export function executeIdentifyOportunity() {
-
-	let refatoracoes: any = [];
-
-	refatoracoes.push(ternary.hasCodeChanged(activeEditor().document.getText(), 
-	vscode.window.activeTextEditor?.selection, activeEditor().document.fileName));
-
-	refatoracoes.push(deadCode.hasCodeChanged(activeEditor().document.getText(), 
-			vscode.window.activeTextEditor?.selection, activeEditor().document.fileName));
-
-	refatoracoes.push(extractType.hasCodeChanged(activeEditor().document.getText(), 
-			vscode.window.activeTextEditor?.selection, activeEditor().document.fileName));
-
-	refatoracoes.push(extractInterface.hasCodeChanged(activeEditor().document.getText(), 
-			vscode.window.activeTextEditor?.selection, activeEditor().document.fileName));
-
-	refatoracoes.push(inlineFunction.hasCodeChanged(activeEditor().document.getText(), 
-			vscode.window.activeTextEditor?.selection, activeEditor().document.fileName));
-
-	if (refatoracoes.length > 0) {
-		let formatedRefactors = ""; 	
-
-		refatoracoes.forEach((item: string) => {
-			formatedRefactors += item !== undefined ? item === refatoracoes[refatoracoes.length -1] ? item : item + ", " : "";
-		});
-
-		vscode.window
-		.showInformationMessage("Foram identificadas as seguintes oportunidades de refatoração: " + formatedRefactors + ". Deseja aplica-las?", "Sim", "Não")
-		.then(answer => {
-			if (answer === "Sim") {
-				//executeConvertIfElseToTernary();
-				//executeRemoveDeadCode();
-				//executeExtractType();
-				//executeExtractInterface();
-				//executeInlineFunction();
-			}
-		});
-	}
+	autoIdentifyOportunity.executeIdentifyOportunity();
 }
 
 export function executeConvertIfElseToTernary() {
-	const report = getSourceMetrics();
-	showDiagnostics(report);
-	const teste = t.parse(activeEditor().document.getText());
-
-	console.log("var teste", teste);
-	console.log("teste", vscode.window);
-	console.log("editor", vscode.window.activeTextEditor);
-
 	ternary.convertIfElseToTernary(activeEditor().document.getText(), 
 		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
-
-	vscode.window.showInformationMessage('Sucesso ternary!');	
 }
 
 export function executeRemoveDeadCode() {
-	const report = getSourceMetrics();
-	showDiagnostics(report);
-	const teste = t.parse(activeEditor().document.getText());
-
-	console.log("var teste", teste);
-	console.log("teste", vscode.window);
-	console.log("editor", vscode.window.activeTextEditor);
-
 	deadCode.removeDeadCode(activeEditor().document.getText(), 
 		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
-
-	vscode.window.showInformationMessage('Sucesso dead code!');	
 }
 
 export function executeExtractType() {
-	const report = getSourceMetrics();
-	showDiagnostics(report);
-	const teste = t.parse(activeEditor().document.getText());
-
-	console.log("var teste", teste);
-	console.log("teste", vscode.window);
-	console.log("editor", vscode.window.activeTextEditor);
-
 	extractType.extractType(activeEditor().document.getText(), 
 		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
-
-	vscode.window.showInformationMessage('Sucesso extract type!');	
 }
 
 export function executeExtractInterface() {
+	extractInterface.extractInterface(activeEditor().document.getText(), 
+		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+}
+
+export function executeInlineFunction() {
+	inlineFunction.inlineFunction(activeEditor().document.getText(), 
+		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+}
+
+export function executeTest() {
 	const report = getSourceMetrics();
 	showDiagnostics(report);
 	const teste = t.parse(activeEditor().document.getText());
@@ -153,21 +91,6 @@ export function executeExtractInterface() {
 		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
 
 	vscode.window.showInformationMessage('Sucesso extract interface!');	
-}
-
-export function executeInlineFunction() {
-	const report = getSourceMetrics();
-	showDiagnostics(report);
-	const teste = t.parse(activeEditor().document.getText());
-
-	console.log("var teste", teste);
-	console.log("teste", vscode.window);
-	console.log("editor", vscode.window.activeTextEditor);
-
-	inlineFunction.inlineFunction(activeEditor().document.getText(), 
-		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
-
-	vscode.window.showInformationMessage('Sucesso inline function!');	
 }
 
 export function getSourceMetrics(): any {

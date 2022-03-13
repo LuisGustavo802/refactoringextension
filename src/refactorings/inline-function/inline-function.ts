@@ -12,7 +12,7 @@ export function hasCodeChanged(code: any, selection: any, file: any) {
   console.log("updatedCode", updatedCode);
 
   if (updatedCode.hasCodeChanged) {
-    return "Inline function";
+    return "Inline function\n";
   }
 
   return;

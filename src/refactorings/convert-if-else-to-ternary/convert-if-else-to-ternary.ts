@@ -11,7 +11,7 @@ function hasCodeChanged(code: any, selection: any, file: any) {
   console.log("updatedCode", updatedCode);
 
   if (updatedCode.hasCodeChanged) {
-    return "Converter if else to ternary";
+    return "Convert to ternary\n";
   }
 
   return;

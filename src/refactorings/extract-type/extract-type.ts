@@ -10,7 +10,7 @@ export function hasCodeChanged(code: any, selection: any, file: any) {
   console.log("updatedCode", updatedCode);
 
   if (updatedCode.hasCodeChanged) {
-    return "Extract type";
+    return "Extract type\n";
   }
 
   return;
@@ -100,7 +100,6 @@ function createVisitor(
 ): t.Visitor {
   return {
     TSBaseType(path) {
-      ////if (!selection.isInsidePath(path)) return;
       if (!t.isTSTypeParameterInstantiation(path.parent)) return;
 
       // Since we visit nodes from parent to children, first check
@@ -113,15 +112,12 @@ function createVisitor(
     },
 
     TSTypeQuery(path) {
-      //if (!selection.isInsidePath(path)) return;
-
       onMatch(path, path.node, (identifier) => {
         path.replaceWith(t.genericTypeAnnotation(identifier));
       });
     },
 
     TSUnionType(path) {
-      //if (!selection.isInsidePath(path)) return;
       // This case is already handled in TSTypeAnnotation
       if (path.parentPath.isTSTypeAnnotation()) return;
 
@@ -135,7 +131,6 @@ function createVisitor(
     },
 
     TSIntersectionType(path) {
-      //if (!selection.isInsidePath(path)) return;
       // This case is already handled in TSTypeAnnotation
       if (path.parentPath.isTSTypeAnnotation()) return;
 
@@ -149,7 +144,6 @@ function createVisitor(
     },
 
     TSTypeReference(path) {
-      //if (!selection.isInsidePath(path)) return;
       if (!t.isTSTypeParameterInstantiation(path.parent)) return;
 
       // Since we visit nodes from parent to children, first check
@@ -162,7 +156,6 @@ function createVisitor(
     },
 
     TSAsExpression(path) {
-      //if (!selection.isInsidePath(path)) return;
       if (selection.isInsideNode(path.node.expression)) return;
 
       // Since we visit nodes from parent to children, first check
@@ -175,8 +168,6 @@ function createVisitor(
     },
 
     TSTypeAnnotation(path) {
-      //if (!selection.isInsidePath(path)) return;
-
       // Since we visit nodes from parent to children, first check
       // if a child would match the selection closer.
       if (hasChildWhichMatchesSelection(path, selection)) return;

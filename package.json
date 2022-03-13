@@ -42,7 +42,7 @@
 			},
 			{
 				"command": "refactoringextension.identifyOportunity",
-				"title": "Identificar oportunidades de refagotação"
+				"title": "Identificar oportunidades de refatoração"
 			}
 		]
 	},

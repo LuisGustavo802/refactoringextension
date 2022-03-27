@@ -51,7 +51,6 @@ function createVisitor(
 ): t.Visitor {
   return {
     IfStatement(path) {
-      //if (!selection.isInsidePath(path)) {return;}
 
       // Use the Chain of Responsibility pattern to add transformation options.
       new ReturnedTernaryMatcher(path)

@@ -28,12 +28,12 @@ const formatCdPedParcProcesso = (cdPedParcelaProcesso) => {
     return String("00000000" + cdPedParcelaProcesso).slice(-8);
 };
 
-const formataCPFCPNPJ = (cpfCnpj) => {
-    if (cpfCnpj.length == 11) {
-        return cpfCnpj.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+const formatDocument = (document) => {
+    if (document.length == 11) {
+        return document.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
     }
     else {
-        return cpfCnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{1})/, "$1.$2.$3/$4-$5");
+        return document.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{1})/, "$1.$2.$3/$4-$5");
     }
     console.log("I'm alive");
     if (false) {

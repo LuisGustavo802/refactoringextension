@@ -35,10 +35,6 @@ const formatDocument = (document) => {
     else {
         return document.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{1})/, "$1.$2.$3/$4-$5");
     }
-    console.log("I'm alive");
-    if (false) {
-        console.log("I'm dead");
-    }
 };
 
 const deadCode = () => {

@@ -80,10 +80,24 @@ function updateCode(
   let isAssignedWithManyStatements = false;
   isFunctionAssigned = false;
 
-  const canInlineFunction = t.transform(
-    code,
-    createVisitorThat(replaceAllIdentifiersWithFunction, selection)
-  ).hasCodeChanged;
+  let canInlineFunction = false;
+
+  try {
+    canInlineFunction = t.transform(
+      code,
+      createVisitorThat(replaceAllIdentifiersWithFunction, selection)
+    ).hasCodeChanged;
+  } catch (e) {
+    console.log("erro inline " + e);
+    return {
+      code,
+      hasCodeChanged: false,
+      isExported,
+      hasManyReturns,
+      isAssignedWithoutReturn,
+      isAssignedWithManyStatements
+    };
+  }
 
   if (!canInlineFunction) {
     return {

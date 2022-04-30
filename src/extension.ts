@@ -5,6 +5,7 @@ import * as extractType from "./refactorings/extract-type/extract-type";
 import * as extractInterface from "./refactorings/extract-interface/extract-interface";
 import * as inlineFunction from "./refactorings/inline-function/inline-function";
 import * as autoIdentifyOportunity from "./refactorings/auto-indentify-oportunity";
+import * as validateProject from "./refactorings/validate-project";
 import * as t from "./ast";
 
 export const activeEditor = () => vscode.window.activeTextEditor!;
@@ -46,7 +47,17 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(identifyOportunity);
 
+	let validateProject = vscode.commands.registerCommand('refactoringextension.validateProject', () => {
+		executeValidateProject();
+	});
+
+	context.subscriptions.push(validateProject);
+
 	vscode.window.showInformationMessage('Operação executada com sucesso!');
+}
+
+export function executeValidateProject() {
+	validateProject.validateProject();
 }
 
 export function executeIdentifyOportunity() {
@@ -54,13 +65,26 @@ export function executeIdentifyOportunity() {
 }
 
 export function executeConvertIfElseToTernary() {
+
+	let report = getSourceMetrics();
+	showDiagnostics(report);
+
 	ternary.convertIfElseToTernary(activeEditor().document.getText(), 
 		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+
+	let report2 = getSourceMetrics();
+	showDiagnostics(report2);
 }
 
 export function executeRemoveDeadCode() {
+	let report = getSourceMetrics();
+	showDiagnostics(report);
+
 	deadCode.removeDeadCode(activeEditor().document.getText(), 
 		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+
+	let report2 = getSourceMetrics();
+	showDiagnostics(report2);
 }
 
 export function executeExtractType() {
@@ -69,13 +93,25 @@ export function executeExtractType() {
 }
 
 export function executeExtractInterface() {
+	let report = getSourceMetrics();
+	showDiagnostics(report);
+
 	extractInterface.extractInterface(activeEditor().document.getText(), 
 		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+		
+	let report2 = getSourceMetrics();
+	showDiagnostics(report2);
 }
 
 export function executeInlineFunction() {
+	let report = getSourceMetrics();
+	showDiagnostics(report);
+
 	inlineFunction.inlineFunction(activeEditor().document.getText(), 
 		vscode.window.activeTextEditor?.selection, activeEditor().document.fileName);
+
+	let report2 = getSourceMetrics();
+	showDiagnostics(report2);
 }
 
 export function executeTest() {
@@ -97,6 +133,8 @@ export function getSourceMetrics(): any {
 	var escomplex = require('typhonjs-escomplex');
 
 	console.log(activeEditor().document.getText());
+
+	console.log("metrics", escomplex.analyzeModule(activeEditor().document.getText()));
 
 	return escomplex.analyzeModule(activeEditor().document.getText());
 }
@@ -142,6 +180,7 @@ export function getMethodDiagnostic(methodReport: any, diagnostics: any) {
 	diagnostics.push(new vscode.Diagnostic(range, "Bugs: ".concat(methodReport.halstead.bugs), vscode.DiagnosticSeverity.Warning));
 	diagnostics.push(new vscode.Diagnostic(range, "sloc (logical): ".concat(methodReport.sloc.logical), vscode.DiagnosticSeverity.Warning));
 	diagnostics.push(new vscode.Diagnostic(range, "sloc (physical): ".concat(methodReport.sloc.physical), vscode.DiagnosticSeverity.Warning));
+	diagnostics.push(new vscode.Diagnostic(range, "Time: ".concat(methodReport.halstead.time), vscode.DiagnosticSeverity.Warning));
 }
 
 export function deactivate() {}

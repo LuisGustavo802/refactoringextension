@@ -19,6 +19,8 @@ function hasCodeChanged(code: any, selection: any, file: any) {
 
 async function convertIfElseToTernary(code: any, selection: any, file: any) {
 
+  const teste = t.parse(code);
+
   const updatedCode = updateCode(t.parse(code), selection);
 
   console.log("updatedCode", updatedCode);

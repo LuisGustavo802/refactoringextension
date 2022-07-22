@@ -5,36 +5,36 @@ const fs = require('fs');
 let valueMetricsOld: any[] = [];
 let valueMetricsNew: any[] = [];
 
-let averangeValueMetricsOld: number[] = [0, 0, 0, 0, 0];
-let averangeValueMetricsNew: number[] = [0, 0, 0, 0, 0];
-
 export function validateProject() {
-	const projeto: string = "/Users/bi004822/repos/tcc/freeCodeCamp/api-server/src";
+	//const projeto: string = "/Users/bi004822/repos/tcc/freeCodeCamp/api-server/src";
+	//const projeto: string = "/Users/bi004822/repos/tcc/javascript-algorithms/src";
+	const projeto: string = "/Users/bi004822/repos/tcc/JavaScript";
+
 
 	const read = require("fs-readdir-recursive");
 
 	let filteredFiles = read(projeto).filter((item: any) => item.endsWith(".js"));
 
-	averangeValueMetricsOld = [0, 0, 0, 0, 0];
-	averangeValueMetricsNew = [0, 0, 0, 0, 0];
 	valueMetricsOld = [];
 	valueMetricsNew = [];
 
-	let count = 0;
+	let totalRefactors = 0;
+	let hasRefactors = 0;
 
 	filteredFiles.forEach((file: any) => {
 		let readFile = projeto.concat("/").concat(file);
 
 		if (fs.existsSync( readFile )) {
-			count++;
-
-			console.log("validate file: " + count);
-
 			let sourceCode = fs.readFileSync(readFile, 'utf8');
 
 			validateSourceMetricts(sourceCode, file, valueMetricsOld);
 
-			autoIdentifyOportunity.executeIdentifyOportunity(sourceCode, readFile);
+			hasRefactors = autoIdentifyOportunity.countRefactorsAvaliable(sourceCode, readFile);
+
+			if (hasRefactors > 0) {
+				totalRefactors += hasRefactors;
+				autoIdentifyOportunity.executeIdentifyOportunity(sourceCode, readFile);
+			}
 
 			sourceCode = fs.readFileSync(readFile, 'utf8');
 
@@ -43,6 +43,9 @@ export function validateProject() {
 	});
 
 	saveMetrics();
+
+	console.log("Total refactors: " + totalRefactors);
+	console.log("Total refactors by type: " + autoIdentifyOportunity.getTotalRefactors());
 }
 
 function validateSourceMetricts(sourceCode: any, file: any, structure: any): any {
@@ -50,58 +53,53 @@ function validateSourceMetricts(sourceCode: any, file: any, structure: any): any
 
 	try {
 		metrics = getSourceMetrics(sourceCode);
-	} catch {
+	} catch (e) {
 		console.log("erro ao coletar métricas do arquivo: " + file);
+		console.error(e);
 
 		return;
 	}
 
-	let methodMetrics: any[] = ["", 0, 0, 0, 0, 0];
+	metrics.methods.forEach((method: any) => {
+		let methodMetrics: any[] = ["", 0, 0, 0, 0, 0, 0];
 
-	methodMetrics[0] = file;
-	methodMetrics[1] = metrics.aggregateReport.cyclomatic;
-	methodMetrics[2] = metrics.aggregateReport.halstead.difficulty;
-	methodMetrics[3] = metrics.aggregateReport.halstead.time;
-	methodMetrics[4] = metrics.classes.length;
-	methodMetrics[5] = metrics.methods.length;
+		let name = method.name;
 
-	structure.push(methodMetrics);
+		if (name === undefined || name.includes("anon method")) {
+			name = sourceCode.split('\n')[method.lineStart-1];
+		}
 
-	/*metrics.methods.forEach((method: any) => {
-		methodMetrics[0] = file + " - " + method.name;
+		methodMetrics[0] = file + " - " + name;
 		methodMetrics[1] = method.cyclomatic;
 		methodMetrics[2] = method.halstead.difficulty;
 		methodMetrics[3] = method.halstead.time;
 		methodMetrics[4] = metrics.classes.length;
 		methodMetrics[5] = metrics.methods.length;
-
+		methodMetrics[6] = method.sloc.logical;
 
 		structure.push(methodMetrics);
-
 	});
-
-	methodMetrics = ["", 0, 0, 0, 0, 0];
 
 	metrics.classes.forEach((classe: any) => {
 		classe.methods.forEach((method: any) => {
-			methodMetrics[0] = file + " - " + method.name;
+			let methodMetrics: any[] = ["", 0, 0, 0, 0, 0, 0];
+			let name = method.name;
+
+			if (name === undefined || name.includes("anon method")) {
+				name = sourceCode.split('\n')[method.lineStart-1];
+			}
+	
+			methodMetrics[0] = file + " - " + name;
 			methodMetrics[1] = method.cyclomatic;
 			methodMetrics[2] = method.halstead.difficulty;
 			methodMetrics[3] = method.halstead.time;
 			methodMetrics[4] = metrics.classes.length;
 			methodMetrics[5] = metrics.methods.length;
-	
+			methodMetrics[6] = method.sloc.logical;
 	
 			structure.push(methodMetrics);
-	
 		});
-	});*/
-
-	/*structure[0] = structure[0] + metrics.aggregateReport.cyclomatic;
-	structure[1] = structure[1] + metrics.aggregateReport.halstead.difficulty;
-	structure[2] = structure[2] + metrics.aggregateReport.halstead.time;
-	structure[3] = structure[3] + metrics.classes.length;
-	structure[4] = structure[4] + metrics.methods.length;*/
+	});
 }
 
 function getSourceMetrics(sourceCode: any): any {
@@ -116,6 +114,7 @@ function saveMetrics() {
 	generateCsvFile("time");
 	generateCsvFile("classes");
 	generateCsvFile("methods");
+	generateCsvFile("lloc");
 }
 
 function generateCsvFile(metric: any) {
@@ -137,6 +136,9 @@ function generateCsvFile(metric: any) {
 		case 'methods':
 			position = 5;
 			break;
+		case 'lloc':
+			position = 5;
+			break;
 	}
 
 	if ((valueMetricsOld.length > 0 && valueMetricsNew.length > 0) && position > 0) {
@@ -148,16 +150,28 @@ function generateCsvFile(metric: any) {
 		valueMetricsOld.forEach((value: any, index) => {
 			methodMetric = ["", 0, 0];
 
-			methodMetric[0] = value[0];
-			methodMetric[1] = value[position];
-			methodMetric[2] = valueMetricsNew[index][position];
+			let positionNew = valueMetricsNew.map(element => element[0] === value[0]).indexOf(true);
 
-			data.push(methodMetric);
+			let metricOld = value[position];
+
+			let metricNew = positionNew < 0 ? 0 : valueMetricsNew[positionNew][position];
+
+			if (metricOld !== metricNew) {
+				methodMetric[0] = value[0].split(" - ")[0];
+				methodMetric[1] = metricOld;
+				methodMetric[2] = metricNew;
+
+				data.push(methodMetric);
+			}
 		});
 
 		const val = [header].concat(data).map(arr => arr.join(',')).join('\r\n');
 
-		fs.writeFile('/Users/bi004822/repos/tcc/resultados/freeCodeCamp/'+ metric +'.csv', val, (err:any) => {
+		//const projeto = "freeCodeCamp";
+		//const projeto = "javascript-algorithms";
+		const projeto = "JavaScript";
+
+		fs.writeFile('/Users/bi004822/repos/tcc/resultados/' + projeto + '/'+ metric +'.csv', val, (err: any) => {
 			if(err) {
 				console.error(err);
 			} else {
@@ -165,19 +179,4 @@ function generateCsvFile(metric: any) {
 			}
 		});
 	}
-}
-
-function printTotals(projeto: any, filesQtd: any) {
-	console.log("Executada a validação do projeto: " + projeto);
-	console.log(filesQtd + " arquivos validados");
-
-	console.log(" ");
-
-	console.log("Metricas antes da refatoração:");
-	console.table(averangeValueMetricsOld);
-
-	console.log(" ");
-
-	console.log("Metricas depois da refatoração:");
-	console.table(averangeValueMetricsNew);
 }

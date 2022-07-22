@@ -1,0 +1,6 @@
+Método,Métrica antes,Métrica depois
+algorithms/cryptography/rail-fence-cipher/railFenceCipher.js,2,0
+algorithms/math/binary-floating-point/floatAsBinaryString.js,4,0
+algorithms/math/prime-factors/__test__/primeFactors.test.js,1,0
+algorithms/sets/power-set/btPowerSet.js,2,0
+algorithms/sorting/radix-sort/RadixSort.js,1,2

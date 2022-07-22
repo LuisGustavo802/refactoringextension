@@ -16,7 +16,8 @@
 		"onCommand:refactoringextension.extractInterface",
 		"onCommand:refactoringextension.inlineFunction",
 		"onCommand:refactoringextension.identifyOportunity",
-		"onCommand:refactoringextension.validateProject"
+		"onCommand:refactoringextension.validateProject",
+		"onCommand:refactoringextension.collectMetrics"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -44,6 +45,10 @@
 			{
 				"command": "refactoringextension.validateProject",
 				"title": "RefactorExtension :: Validar projeto inteiro"
+			},
+			{
+				"command": "refactoringextension.collectMetrics",
+				"title": "RefactorExtension :: Coletar Métricas"
 			}
 		]
 	},

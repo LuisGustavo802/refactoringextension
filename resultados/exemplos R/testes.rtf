@@ -1,0 +1,62 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2511
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Resultados:\
+\
+t-test:\
+data:  periodo1 and periodo2\
+t = 3.7551, df = 339.55, p-value = 0.0002038\
+alternative hypothesis: true difference in means is not equal to 0\
+95 percent confidence interval:\
+  431.2642 1380.0753\
+sample estimates:\
+mean of x mean of y \
+ 3644.424  2738.754 \
+Conclus\'e3o: as amostras periodo1 e periodo2 n\'e3o s\'e3o relacionadas\
+\
+Shapiro-Wilk teste de normalidade:\
+> with(my_data, shapiro.test(weight[group == "Periodo1"]))\
+\
+	Shapiro-Wilk normality test\
+\
+data:  weight[group == "Periodo1"]\
+W = 0.73725, p-value < 2.2e-16\
+\
+> with(my_data, shapiro.test(weight[group == "Periodo2"]))\
+\
+	Shapiro-Wilk normality test\
+\
+data:  weight[group == "Periodo2"]\
+W = 0.8268, p-value = 1.637e-15\
+Conclus\'e3o: as duas amostras seguem uma distribui\'e7\'e3o normal\
+\
+\
+F-test para homogeneidade entre vari\'e2ncias\
+weight = c(periodo1, periodo2)\
+group = rep(c("Periodo1", "Periodo2"), each=max_len)\
+res.ftest <- var.test(weight ~ group, data=my_data)\
+res.ftest\
+	F test to compare two variances\
+\
+data:  weight by group\
+F = 2.9956, num df = 216, denom df = 235, p-value = 4.441e-16\
+alternative hypothesis: true ratio of variances is not equal to 1\
+95 percent confidence interval:\
+ 2.307005 3.895487\
+sample estimates:\
+ratio of variances \
+          2.995623 \
+Conclus\'e3o: existe diferen\'e7a significativa entre as vari\'e2ncias das duas amostras. Portanto, nosso primeiro t-test tava correto (assumia diferentes vari\'e2ncias no FALSE)\
+\
+No primeiro teste, obtivemos p-value = 0.0002038 que \'e9 bem menor que 0.05.\
+Podemos concluir que as amostras s\'e3o significativamente diferentes uma da outra.\
+E portanto podemos concluir que houve uma diminui\'e7\'e3o do tempo gasto de atendimento :-)\
+\
+\
+\
+\
+}

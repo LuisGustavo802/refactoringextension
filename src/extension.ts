@@ -53,7 +53,20 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(validateProject);
 
+	let collectMetrics = vscode.commands.registerCommand('refactoringextension.collectMetrics', () => {
+		executeCollectMetrics();
+	});
+
+	context.subscriptions.push(collectMetrics);
+
 	vscode.window.showInformationMessage('Operação executada com sucesso!');
+}
+
+export function executeCollectMetrics() {
+	let report = getSourceMetrics();
+	showDiagnostics(report);
+
+	console.log(report);
 }
 
 export function executeValidateProject() {
@@ -181,6 +194,10 @@ export function getMethodDiagnostic(methodReport: any, diagnostics: any) {
 	diagnostics.push(new vscode.Diagnostic(range, "sloc (logical): ".concat(methodReport.sloc.logical), vscode.DiagnosticSeverity.Warning));
 	diagnostics.push(new vscode.Diagnostic(range, "sloc (physical): ".concat(methodReport.sloc.physical), vscode.DiagnosticSeverity.Warning));
 	diagnostics.push(new vscode.Diagnostic(range, "Time: ".concat(methodReport.halstead.time), vscode.DiagnosticSeverity.Warning));
+}
+
+function test() {
+	return "this is a test";
 }
 
 export function deactivate() {}

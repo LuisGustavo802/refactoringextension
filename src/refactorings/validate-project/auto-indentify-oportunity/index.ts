@@ -7,11 +7,49 @@ import * as inlineFunction from "../../../refactorings/inline-function/inline-fu
 
 const activeEditor = () => vscode.window.activeTextEditor!;
 
+let totalRefactors: any[] = [0, 0, 0, 0];
+
+export function getTotalRefactors() {
+	return totalRefactors;
+}
+
 export function countRefactorsAvaliable(sourceCode: any, readFile: any) {
 
 	let refatoracoes: any = [];
 
-	refatoracoes.push(ternary.hasCodeChanged(sourceCode, vscode.window.activeTextEditor?.selection, ""));
+	let hasTernary: any = ternary.hasCodeChanged(sourceCode, vscode.window.activeTextEditor?.selection, "");
+
+	if (hasTernary != undefined) {
+		totalRefactors[0] += 1;
+		refatoracoes.push(hasTernary);
+	}
+
+	let hasDeadCode: any = deadCode.hasCodeChanged(sourceCode, vscode.window.activeTextEditor?.selection, "");
+
+	if (hasDeadCode != undefined) {
+		totalRefactors[1] += 1;
+		refatoracoes.push(hasDeadCode);
+	}
+
+	let hasExtractInterface: any = extractInterface.hasCodeChanged(sourceCode, vscode.window.activeTextEditor?.selection, "");
+
+	if (hasExtractInterface != undefined) {
+		totalRefactors[2] += 1;
+		refatoracoes.push(hasExtractInterface);
+	}
+
+	try {
+		let hasInlineFunction: any = inlineFunction.hasCodeChanged(sourceCode, vscode.window.activeTextEditor?.selection, "");
+
+		if (hasInlineFunction != undefined) {
+			totalRefactors[3] += 1;
+			refatoracoes.push(hasInlineFunction);
+		}
+	} catch {
+		console.log("Erro executeConvertIfElseToTernary arquivo: " + readFile);
+	}
+
+	/*refatoracoes.push(ternary.hasCodeChanged(sourceCode, vscode.window.activeTextEditor?.selection, ""));
 
 	refatoracoes.push(deadCode.hasCodeChanged(sourceCode, vscode.window.activeTextEditor?.selection, ""));
 
@@ -21,9 +59,7 @@ export function countRefactorsAvaliable(sourceCode: any, readFile: any) {
 		refatoracoes.push(inlineFunction.hasCodeChanged(sourceCode, vscode.window.activeTextEditor?.selection, ""));
 	} catch {
 		console.log("Erro executeConvertIfElseToTernary arquivo: " + readFile);
-	}
-
-	refatoracoes.push(inlineFunction.hasCodeChanged(sourceCode, vscode.window.activeTextEditor?.selection, ""));
+	}*/
 
 	let formatedRefactors = 0; 	
 
@@ -35,32 +71,29 @@ export function countRefactorsAvaliable(sourceCode: any, readFile: any) {
 }
 
 export function executeIdentifyOportunity(sourceCode: any, readFile: any) {
-	let hasRefactors = countRefactorsAvaliable(sourceCode, readFile);
 
-	if (hasRefactors > 0) {
-		try {
-			executeConvertIfElseToTernary(sourceCode, readFile);
-		} catch {
-			console.log("Erro executeConvertIfElseToTernary arquivo: " + readFile);
-		}
+	try {
+		executeConvertIfElseToTernary(sourceCode, readFile);
+	} catch {
+		console.log("Erro executeConvertIfElseToTernary arquivo: " + readFile);
+	}
 
-		try {
-			executeRemoveDeadCode(sourceCode, readFile);
-		} catch {
-			console.log("Erro executeRemoveDeadCode arquivo: " + readFile);
-		}
+	try {
+		executeRemoveDeadCode(sourceCode, readFile);
+	} catch {
+		console.log("Erro executeRemoveDeadCode arquivo: " + readFile);
+	}
 
-		try {
-			executeExtractInterface(sourceCode, readFile);
-		} catch {
-			console.log("Erro executeExtractInterface arquivo: " + readFile);
-		}
+	try {
+		executeExtractInterface(sourceCode, readFile);
+	} catch {
+		console.log("Erro executeExtractInterface arquivo: " + readFile);
+	}
 
-		try {
-			executeInlineFunction(sourceCode, readFile);
-		} catch {
-			console.log("Erro executeInlineFunction arquivo: " + readFile);
-		}
+	try {
+		executeInlineFunction(sourceCode, readFile);
+	} catch {
+		console.log("Erro executeInlineFunction arquivo: " + readFile);
 	}
 }
 

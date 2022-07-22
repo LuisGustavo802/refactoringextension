@@ -80,18 +80,16 @@
          solution: solutions[currentId]
        };
      }
-     if (!isCurrentlyCompleted) {
-       return [
-         ...update,
-         {
-           id: currentId,
-           solution: solutions[currentId],
-           challengeType: 3,
-           completedDate: now
-         }
-       ];
-     }
-     return update;
+
+     return !isCurrentlyCompleted ? [
+       ...update,
+       {
+         id: currentId,
+         solution: solutions[currentId],
+         challengeType: 3,
+         completedDate: now
+       }
+     ] : update;
    }, currentCompletedProjects);
    const updatedExisting = _.uniqBy(
      [...update, ...currentCompletedChallenges],
@@ -236,10 +234,8 @@
      const UserCredential = User.app.models.UserCredential;
      log('removing user', ctx.where);
      var id = ctx.where && ctx.where.id ? ctx.where.id : null;
-     if (!id) {
-       return next();
-     }
-     return Observable.combineLatest(
+
+     return !id ? next() : Observable.combineLatest(
        destroyAll(id, UserIdentity),
        destroyAll(id, UserCredential),
        function (identData, credData) {
@@ -294,10 +290,7 @@
              verificationToken: null
            },
            err => {
-             if (err) {
-               return reject(err);
-             }
-             return resolve();
+             return err ? reject(err) : resolve();
            }
          )
        );
@@ -327,10 +320,7 @@
      }
      const updateUser = new Promise((resolve, reject) =>
        this.updateAttributes(data, err => {
-         if (err) {
-           return reject(err);
-         }
-         return resolve();
+         return err ? reject(err) : resolve();
        })
      );
      return Observable.combineLatest(
@@ -396,13 +386,10 @@
    });
  
    User.about = function about(username, cb) {
-     if (!username) {
-       // Zalgo!!
-       return nextTick(() => {
-         cb(null, {});
-       });
-     }
-     return User.findOne({ where: { username } }, (err, user) => {
+     // Zalgo!!
+     return !username ? nextTick(() => {
+       cb(null, {});
+     }) : User.findOne({ where: { username } }, (err, user) => {
        if (err) {
          return cb(err);
        }
@@ -500,10 +487,7 @@
          };
          const userUpdate = new Promise((resolve, reject) =>
            this.updateAttributes({ emailAuthLinkTTL }, err => {
-             if (err) {
-               return reject(err);
-             }
-             return resolve();
+             return err ? reject(err) : resolve();
            })
          );
          return Observable.forkJoin(
@@ -583,10 +567,7 @@
          .flatMap(() => {
            const updatePromise = new Promise((resolve, reject) =>
              this.updateAttributes(updateConfig, err => {
-               if (err) {
-                 return reject(err);
-               }
-               return resolve();
+               return err ? reject(err) : resolve();
              })
            );
            return Observable.forkJoin(
@@ -626,10 +607,7 @@
      log(userUpdateData);
      const userUpdate = new Promise((resolve, reject) =>
        this.updateAttributes(userUpdateData, err => {
-         if (err) {
-           return reject(err);
-         }
-         return resolve();
+         return err ? reject(err) : resolve();
        })
      );
      return Observable.fromPromise(userUpdate).map(
@@ -661,10 +639,7 @@
      }
      const userUpdate = new Promise((resolve, reject) =>
        this.updateAttribute('portfolio', updatedPortfolio, err => {
-         if (err) {
-           return reject(err);
-         }
-         return resolve();
+         return err ? reject(err) : resolve();
        })
      );
      return Observable.fromPromise(userUpdate).map(
@@ -692,10 +667,7 @@
          }
          const updatePromise = new Promise((resolve, reject) =>
            this.updateAttributes(updateData, err => {
-             if (err) {
-               return reject(err);
-             }
-             return resolve();
+             return err ? reject(err) : resolve();
            })
          );
          return Observable.fromPromise(updatePromise);
@@ -714,10 +686,7 @@
      };
      const profileUIUpdate = new Promise((resolve, reject) =>
        this.updateAttribute('profileUI', newProfileUI, err => {
-         if (err) {
-           return reject(err);
-         }
-         return resolve();
+         return err ? reject(err) : resolve();
        })
      );
      return Observable.fromPromise(profileUIUpdate).map(
@@ -754,15 +723,12 @@
        showPortfolio = false,
        showTimeLine = false
      } = profileUI;
- 
-     if (isLocked) {
-       return {
-         isLocked,
-         profileUI,
-         username
-       };
-     }
-     return {
+
+     return isLocked ? {
+       isLocked,
+       profileUI,
+       username
+     } : {
        ...user,
        about: showAbout ? about : '',
        calendar: showHeatMap ? calendar : {},
@@ -868,58 +834,53 @@
        .valueOf();
      const user$ = findUser({ where: { username: receiver } });
  
-     return (
-       user$
-         .tapOnNext(user => {
-           if (!user) {
-             throw new Error(`could not find receiver for ${receiver}`);
-           }
-         })
-         .flatMap(({ progressTimestamps = [] }) => {
-           return Observable.from(progressTimestamps);
-         })
-         // filter out non objects
-         .filter(timestamp => !!timestamp || typeof timestamp === 'object')
-         // filter out timestamps older than one hour
-         .filter(({ timestamp = 0 }) => {
-           return timestamp >= browniePoints;
-         })
-         // filter out brownie points given by giver
-         .filter(browniePoint => {
-           return browniePoint.giver === giver;
-         })
-         // no results means this is the first brownie point given by giver
-         // so return -1 to indicate receiver should receive point
-         .first({ defaultValue: -1 })
-         .flatMap(browniePointsFromGiver => {
-           if (browniePointsFromGiver === -1) {
-             return user$.flatMap(user => {
-               user.progressTimestamps.push({
-                 giver,
-                 timestamp: Date.now(),
-                 ...data
-               });
-               return saveUser(user);
-             });
-           }
-           return Observable.throw(
-             new Error(`${giver} already gave ${receiver} points`)
+     return user$
+       .tapOnNext(user => {
+         if (!user) {
+           throw new Error(`could not find receiver for ${receiver}`);
+         }
+       })
+       .flatMap(({ progressTimestamps = [] }) => {
+         return Observable.from(progressTimestamps);
+       })
+       // filter out non objects
+       .filter(timestamp => !!timestamp || typeof timestamp === 'object')
+       // filter out timestamps older than one hour
+       .filter(({ timestamp = 0 }) => {
+         return timestamp >= browniePoints;
+       })
+       // filter out brownie points given by giver
+       .filter(browniePoint => {
+         return browniePoint.giver === giver;
+       })
+       // no results means this is the first brownie point given by giver
+       // so return -1 to indicate receiver should receive point
+       .first({ defaultValue: -1 })
+       .flatMap(browniePointsFromGiver => {
+       return browniePointsFromGiver === -1 ? user$.flatMap(user => {
+         user.progressTimestamps.push({
+           giver,
+           timestamp: Date.now(),
+           ...data
+         });
+         return saveUser(user);
+       }) : Observable.throw(
+         new Error(`${giver} already gave ${receiver} points`)
+       );
+     })
+       .subscribe(
+         user => {
+           return cb(
+             null,
+             getAboutProfile(user),
+             dev ? { giver, receiver, data } : null
            );
-         })
-         .subscribe(
-           user => {
-             return cb(
-               null,
-               getAboutProfile(user),
-               dev ? { giver, receiver, data } : null
-             );
-           },
-           e => cb(e, null, dev ? { giver, receiver, data } : null),
-           () => {
-             log('brownie points assigned completed');
-           }
-         )
-     );
+         },
+         e => cb(e, null, dev ? { giver, receiver, data } : null),
+         () => {
+           log('brownie points assigned completed');
+         }
+       );
    };
  
    User.remoteMethod('giveBrowniePoints', {
